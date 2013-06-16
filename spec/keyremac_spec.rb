@@ -19,6 +19,19 @@ describe 'root' do
     @root.children.length.must_equal 1
   end
 
+  describe 'item' do
+    it '' do
+      @root.item {}
+      @root.children.length.must_equal 1
+    end
+
+    it 'raw' do
+      @root.item {
+        autogen_ '__KeyToKey__ KeyCode::J, KeyCode::K'
+      }
+      @root.children.length.must_equal 1
+    end
+  end
 end
 
 describe 'dump' do
@@ -45,5 +58,34 @@ EOT
 </root>
 EOT
     @root.dump.must_equal expected
+  end
+
+  describe 'item' do
+    it '' do
+      @root.item {}
+    expected = <<EOT
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <item>
+  </item>
+</root>
+EOT
+      @root.dump.must_equal expected
+    end
+
+    it 'raw' do
+      @root.item {
+        autogen_ '__KeyToKey__ KeyCode::J, KeyCode::K'
+      }
+    expected = <<EOT
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <item>
+    <autogen>__KeyToKey__ KeyCode::J, KeyCode::K</autogen>
+  </item>
+</root>
+EOT
+      @root.dump.must_equal expected
+    end
   end
 end

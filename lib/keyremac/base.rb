@@ -2,7 +2,26 @@
 require 'builder'
 
 module Keyremac
+  module Container
+    def method_missing(method_name, *args, &block)
+      method_name = method_name.to_s
+      if method_name[-1] == '_'
+        raw = Raw.new method_name.chomp('_')
+        if block
+          raw.instance_eval(&block)
+        else
+          raw.children = args[0]
+        end
+        @children << raw
+        raw
+      else
+        raise NoMethodError, method_name
+      end
+    end
+  end
+
   class Raw
+    include Container
     attr_accessor :children
     def initialize(tag, children = [])
       @tag = tag
@@ -20,26 +39,29 @@ module Keyremac
         end
       end
     end
+  end
 
-    def method_missing(method_name, *args, &block)
-      method_name = method_name.to_s
-      if method_name[-1] == '_'
-        raw = Raw.new method_name.chomp('_')
-        if block
-          raw.instance_eval(&block)
-        else
-          raw.children = args[0]
-        end
-        @children << raw
-        raw
-      else
-        raise NoMethodError, method_name
+  class Item
+    include Container
+
+    attr_accessor :children
+    def initialize
+      @children = []
+    end
+
+    def dump(xml)
+      xml.item do
+        @children.each { |child|
+          child.dump xml
+        }
       end
     end
   end
 
   class Root
-    attr_reader :children
+    include Container
+
+    attr_accessor :children
     def initialize
       @children = []
     end
@@ -54,20 +76,11 @@ module Keyremac
       end
     end
 
-    def method_missing(method_name, *args, &block)
-      method_name = method_name.to_s
-      if method_name[-1] == '_'
-        raw = Raw.new method_name.chomp('_')
-        if block
-          raw.instance_eval(&block)
-        else
-          raw.children = args[0]
-        end
-        @children << raw
-        raw
-      else
-        raise NoMethodError, method_name
-      end
+    def item(&block)
+      item = Item.new
+      @children << item
+      item.instance_eval(&block)
+      item
     end
   end
 
@@ -78,8 +91,8 @@ module Keyremac
       @@root
     end
 
-    def method_missing(*args, &block)
-      @@root.method_missing(*args, &block)
+    def method_missing(method_name, *args, &block)
+      @@root.send(method_name, *args, &block)
     end
   end
 end
