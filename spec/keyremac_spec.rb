@@ -34,9 +34,9 @@ describe 'root' do
   end
 
   describe 'to' do
-    it '' do
+    it 'basic' do
       item = @root.item {
-        add :j .to :k
+        :j .to :k
       }
       item.children.length.must_equal 1
     end

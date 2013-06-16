@@ -3,26 +3,22 @@ require 'builder'
 
 class Symbol
   def to(to)
-    Keyremac::KeyToKey.new self, to
+    key = Keyremac::KeyToKey.new self, to
+    Keyremac.get_focus.add key
+    key
   end
 end
 
 module Keyremac
-  # @@focus = []
-  # def self.focus(container)
-  #   @@focus.push container
-  #   yield
-  #   @@focus.pop
-  # end
-
-  # class Tmp
-  #   def add(key)
-  #   end
-  # end
-
-  # def self.focus
-  #   Tmp.new
-  # end
+  @@focus = []
+  def self.get_focus
+    @@focus.last
+  end
+  def self.set_focus(container, &block)
+    @@focus.push container
+    yield
+    @@focus.pop
+  end
 
   class KeyToKey
     def initialize(from, to)
@@ -33,6 +29,7 @@ module Keyremac
 
   module Container
     attr_accessor :children
+
     def add(rule)
       children << rule
     end
@@ -42,7 +39,9 @@ module Keyremac
       if method_name[-1] == '_'
         raw = Raw.new method_name.chomp('_')
         if block
-          raw.instance_eval(&block)
+          Keyremac.set_focus raw do
+            raw.instance_eval(&block)
+          end
         else
           raw.children = args[0]
         end
@@ -79,7 +78,9 @@ module Keyremac
     def item(&block)
       item = Item.new
       @children << item
-      item.instance_eval(&block)
+      Keyremac.set_focus item do
+        item.instance_eval(&block)
+      end
       item
     end
   end

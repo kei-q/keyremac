@@ -55,7 +55,7 @@ describe 'dump' do
   describe 'to' do
     it 'basic' do
       item = @root.item {
-        add :j .to :k
+        :j .to :k
       }
       expected = ROOT % <<-EOT
   <item>
