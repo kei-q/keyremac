@@ -40,5 +40,10 @@ describe 'root' do
       }
       item.children.length.must_equal 1
     end
+
+    it 'root直下' do
+      :j .to :k
+      @root.root_item.children.length.must_equal 1
+    end
   end
 end

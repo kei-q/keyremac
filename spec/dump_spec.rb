@@ -65,4 +65,22 @@ describe 'dump' do
       @root.dump.must_equal expected
     end
   end
+
+  ROOT2 = <<-EOR
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <item>
+%s  </item>
+</root>
+  EOR
+
+  describe 'root直下' do
+    it 'root直下' do
+      :j .to :k
+      expected = ROOT2 % <<-EOT
+    <autogen>__KeyToKey__ KeyCode::J, KeyCode::K</autogen>
+      EOT
+      @root.dump.must_equal expected
+    end
+  end
 end

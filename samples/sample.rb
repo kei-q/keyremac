@@ -1,11 +1,13 @@
 
 require 'keyremac'
 
+:a .to :b
+
 item_ do
   name_ 'test'
   identifier_ 'private.hoge'
 end
 
 item do
-  add :j .to :k
+  :j .to :k
 end

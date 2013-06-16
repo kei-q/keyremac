@@ -11,6 +11,11 @@ end
 
 module Keyremac
   @@focus = []
+
+  def self.focus
+    @@focus
+  end
+
   def self.get_focus
     @@focus.last
   end
@@ -70,8 +75,13 @@ module Keyremac
 
   class Root
     include Container
+
+    attr_reader :root_item
+
     def initialize
       @root_item = Item.new
+      Keyremac.focus.clear
+      Keyremac.focus << @root_item
       @children = []
     end
 
