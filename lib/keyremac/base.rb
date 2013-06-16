@@ -1,8 +1,42 @@
-
+require 'awesome_print'
 require 'builder'
 
+class Symbol
+  def to(to)
+    Keyremac::KeyToKey.new self, to
+  end
+end
+
 module Keyremac
+  # @@focus = []
+  # def self.focus(container)
+  #   @@focus.push container
+  #   yield
+  #   @@focus.pop
+  # end
+
+  # class Tmp
+  #   def add(key)
+  #   end
+  # end
+
+  # def self.focus
+  #   Tmp.new
+  # end
+
+  class KeyToKey
+    def initialize(from, to)
+      @from = from
+      @to = to
+    end
+  end
+
   module Container
+    attr_accessor :children
+    def add(rule)
+      children << rule
+    end
+
     def method_missing(method_name, *args, &block)
       method_name = method_name.to_s
       if method_name[-1] == '_'
@@ -22,7 +56,6 @@ module Keyremac
 
   class Raw
     include Container
-    attr_accessor :children
     def initialize(tag, children = [])
       @tag = tag
       @children = children
@@ -31,8 +64,6 @@ module Keyremac
 
   class Item
     include Container
-
-    attr_accessor :children
     def initialize
       @children = []
     end
@@ -40,8 +71,6 @@ module Keyremac
 
   class Root
     include Container
-
-    attr_accessor :children
     def initialize
       @root_item = Item.new
       @children = []

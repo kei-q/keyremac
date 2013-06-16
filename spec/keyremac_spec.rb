@@ -32,4 +32,13 @@ describe 'root' do
       @root.children.length.must_equal 1
     end
   end
+
+  describe 'to' do
+    it '' do
+      item = @root.item {
+        add :j .to :k
+      }
+      item.children.length.must_equal 1
+    end
+  end
 end

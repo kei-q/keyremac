@@ -51,4 +51,18 @@ describe 'dump' do
       @root.dump.must_equal expected
     end
   end
+
+  describe 'to' do
+    it 'basic' do
+      item = @root.item {
+        add :j .to :k
+      }
+      expected = ROOT % <<-EOT
+  <item>
+    <autogen>__KeyToKey__ KeyCode::J, KeyCode::K</autogen>
+  </item>
+      EOT
+      @root.dump.must_equal expected
+    end
+  end
 end

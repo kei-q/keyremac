@@ -1,4 +1,10 @@
 module Keyremac
+  class KeyToKey
+    def dump(xml)
+      xml.autogen "__KeyToKey__ KeyCode::#{@from.upcase}, KeyCode::#{@to.upcase}"
+    end
+  end
+
   class Raw
     def dump(xml)
       if @children.class == String

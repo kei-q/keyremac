@@ -7,4 +7,5 @@ item_ do
 end
 
 item do
+  add :j .to :k
 end
