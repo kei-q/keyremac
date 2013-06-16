@@ -1,21 +1,9 @@
 require "keyremac/version"
-
-require 'builder'
+require 'keyremac/base'
 
 module Keyremac
-  class Root
-    def dump
-      xml = Builder::XmlMarkup.new(indent: 2)
-      xml.instruct!
-      xml.root do
-      end
-    end
-  end
-
-  @@root = Root.new
-
   def self.dump
-    puts @@root.dump
+    puts get_root.dump
   end
 
   def self.run
@@ -25,5 +13,7 @@ module Keyremac
       }.parse!(ARGV.dup)
   end
 end
+
+include Keyremac::Delegator
 
 at_exit { Keyremac::run }
