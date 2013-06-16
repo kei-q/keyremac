@@ -43,6 +43,7 @@ module Keyremac
 
     attr_accessor :children
     def initialize
+      @root_item = Item.new
       @children = []
     end
 

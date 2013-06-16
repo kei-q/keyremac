@@ -8,37 +8,34 @@ describe 'dump' do
     @root = Keyremac::Root.new
   end
 
-  it 'rootが出力される' do
-    expected = <<EOT
-<?xml version="1.0" encoding="UTF-8"?>
-<root>
-</root>
-EOT
-    @root.dump.must_equal expected
-  end
-
-  it '任意のtagを書くことができる' do
-    @root.item_ {}
-    expected = <<EOT
+  ROOT = <<-EOR
 <?xml version="1.0" encoding="UTF-8"?>
 <root>
   <item>
   </item>
-</root>
-EOT
+%s</root>
+  EOR
+
+  it 'rootが出力される' do
+    @root.dump.must_equal (ROOT % '')
+  end
+
+  it '任意のtagを書くことができる' do
+    @root.item_ {}
+    expected = ROOT % <<-EOT
+  <item>
+  </item>
+    EOT
     @root.dump.must_equal expected
   end
 
   describe 'item' do
     it '' do
       @root.item {}
-    expected = <<EOT
-<?xml version="1.0" encoding="UTF-8"?>
-<root>
+      expected = ROOT % <<-EOT
   <item>
   </item>
-</root>
-EOT
+      EOT
       @root.dump.must_equal expected
     end
 
@@ -46,14 +43,11 @@ EOT
       @root.item {
         autogen_ '__KeyToKey__ KeyCode::J, KeyCode::K'
       }
-    expected = <<EOT
-<?xml version="1.0" encoding="UTF-8"?>
-<root>
+      expected = ROOT % <<-EOT
   <item>
     <autogen>__KeyToKey__ KeyCode::J, KeyCode::K</autogen>
   </item>
-</root>
-EOT
+      EOT
       @root.dump.must_equal expected
     end
   end

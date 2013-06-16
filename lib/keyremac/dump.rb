@@ -28,6 +28,7 @@ module Keyremac
       xml = Builder::XmlMarkup.new(indent: 2)
       xml.instruct!
       xml.root do
+        @root_item.dump xml
         @children.each { |child|
           child.dump(xml)
         }
