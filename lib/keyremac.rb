@@ -1,5 +1,6 @@
 require "keyremac/version"
 require 'keyremac/base'
+require 'keyremac/dump'
 
 module Keyremac
   def self.dump

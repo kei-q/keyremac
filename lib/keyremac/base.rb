@@ -27,18 +27,6 @@ module Keyremac
       @tag = tag
       @children = children
     end
-
-    def dump(xml)
-      if @children.class == String
-        xml.tag! @tag, @children
-      else
-        xml.tag! @tag do
-          @children.each { |child|
-            child.dump xml
-          }
-        end
-      end
-    end
   end
 
   class Item
@@ -48,14 +36,6 @@ module Keyremac
     def initialize
       @children = []
     end
-
-    def dump(xml)
-      xml.item do
-        @children.each { |child|
-          child.dump xml
-        }
-      end
-    end
   end
 
   class Root
@@ -64,16 +44,6 @@ module Keyremac
     attr_accessor :children
     def initialize
       @children = []
-    end
-
-    def dump
-      xml = Builder::XmlMarkup.new(indent: 2)
-      xml.instruct!
-      xml.root do
-        @children.each { |child|
-          child.dump(xml)
-        }
-      end
     end
 
     def item(&block)
