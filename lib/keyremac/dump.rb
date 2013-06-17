@@ -1,7 +1,21 @@
 module Keyremac
+
+  class Key
+    def dump(xml)
+      if @mods.empty?
+        "KeyCode::#{@name.upcase}"
+      else
+        mods = @mods.to_a
+        mods = mods.map { |mod| "ModifierFlag::#{mod.to_s}" }
+        mods = mods.join(',')
+        "KeyCode::#{@name.upcase}, #{mods}"
+      end
+    end
+  end
+
   class KeyToKey
     def dump(xml)
-      xml.autogen "__KeyToKey__ KeyCode::#{@from.upcase}, KeyCode::#{@to.upcase}"
+      xml.autogen "__KeyToKey__ #{@from.dump(xml)}, #{@to.dump(xml)}"
     end
   end
 

@@ -1,15 +1,12 @@
 require 'awesome_print'
 require 'builder'
 
-class Symbol
-  def to(to)
-    key = Keyremac::KeyToKey.new self, to
-    Keyremac.get_focus.add key
-    key
-  end
-end
+require 'keyremac/key'
 
 module Keyremac
+  # focus
+  # ====================================
+
   @@focus = []
 
   def self.focus
@@ -25,12 +22,18 @@ module Keyremac
     @@focus.pop
   end
 
+  # autogen
+  # ====================================
+
   class KeyToKey
     def initialize(from, to)
       @from = from
       @to = to
     end
   end
+
+  # container
+  # ====================================
 
   module Container
     attr_accessor :children
@@ -94,6 +97,9 @@ module Keyremac
       item
     end
   end
+
+  # delegator
+  # ====================================
 
   module Delegator
     @@root = Root.new

@@ -83,4 +83,14 @@ describe 'dump' do
       @root.dump.must_equal expected
     end
   end
+
+  describe 'mods' do
+    it 'ctrl' do
+      :j.ctrl .to :k
+      expected = ROOT2 % <<-EOT
+    <autogen>__KeyToKey__ KeyCode::J, ModifierFlag::CONTROL_L, KeyCode::K</autogen>
+      EOT
+      @root.dump.must_equal expected
+    end
+  end
 end

@@ -46,4 +46,12 @@ describe 'root' do
       @root.root_item.children.length.must_equal 1
     end
   end
+
+  describe 'mods' do
+    it 'ctrl' do
+      key = :j.ctrl
+      key.class.must_equal Keyremac::Key
+      key.ctrl?.must_equal true
+    end
+  end
 end
