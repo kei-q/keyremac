@@ -48,10 +48,10 @@ describe 'root' do
   end
 
   describe 'mods' do
-    it 'ctrl' do
-      key = :j.ctrl
-      key.class.must_equal Keyremac::Key
-      key.ctrl?.must_equal true
-    end
+    [:ctrl, :shift, :opt, :cmd, :extra1].each { |mod|
+      it mod do
+        :j.send(mod).send("#{mod}?").must_equal true
+      end
+    }
   end
 end

@@ -5,12 +5,16 @@ require 'set'
 
 module Keyremac
   module Keyable
-    def ctrl
-      self.to_key.add_mod :CONTROL_L
-    end
-    def ctrl?
-      self.to_key.mods.include?(:CONTROL_L)
-    end
+    {
+      ctrl:   :CONTROL_L,
+      shift:  :SHIFT_L,
+      opt:    :OPTION_L,
+      cmd:    :COMMAND_L,
+      extra1: :EXTRA1,
+    }.each { |k,v|
+      define_method(k, -> { self.to_key.add_mod v })
+      define_method("#{k}?", -> { self.to_key.mods.include? v })
+    }
 
     def to(to)
       key = Keyremac::KeyToKey.new self.to_key, to.to_key
