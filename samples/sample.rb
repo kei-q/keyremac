@@ -1,6 +1,10 @@
 
 require 'keyremac'
 
+# semicolonとunderscoreをswap
+':' .to ':'
+';' .to '_'
+'_' .to ';'
 
 
 :a .to :b

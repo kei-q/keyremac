@@ -54,4 +54,20 @@ describe 'root' do
       end
     }
   end
+
+  describe 'key' do
+    it '記号を入れると対応するKeyCodeに変換する' do
+      ';'.to_key.code.must_equal 'SEMICOLON'
+    end
+
+    it 'shiftが必要なkeyは内部で分解する' do
+      key = :J.to_key
+      key.code.must_equal 'j'
+      key.shift?.must_equal true
+    end
+
+    it '数値を適切にKeyCodeに変換する' do
+      '1'.to_key.code.must_equal 'KEY_1'
+    end
+  end
 end

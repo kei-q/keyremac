@@ -4,6 +4,35 @@ require 'keyremac/base'
 require 'set'
 
 module Keyremac
+  SYMBOL_TABLE = {
+    '`'  => 'BACKQUOTE',
+    '\\' => 'BACKSLASH',
+    '['  => 'BRACKET_LEFT',
+    ']'  => 'BRACKET_RIGHT',
+    ','  => 'COMMA',
+    '.'  => 'DOT',
+    '='  => 'EQUAL',
+    '-'  => 'MINUS',
+    '\'' => 'QUOTE',
+    ';'  => 'SEMICOLON',
+    '0'  => 'KEY_0',
+    '1'  => 'KEY_1',
+    '2'  => 'KEY_2',
+    '3'  => 'KEY_3',
+    '4'  => 'KEY_4',
+    '5'  => 'KEY_5',
+    '6'  => 'KEY_6',
+    '7'  => 'KEY_7',
+    '8'  => 'KEY_8',
+    '9'  => 'KEY_9',
+  }
+
+  SHIFT_TABLE = Hash[
+    %q[!@#$%^&*()_+~QWERTYUIOP{}ASDFGHJKL:"|ZXCVBNM<>?~].each_char.to_a.zip(
+    %q(1234567890-=`qwertyuiop[]asdfghjkl;'\zxcvbnm,./`).each_char.to_a
+  )]
+
+
   module Keyable
     {
       ctrl:   :CONTROL_L,
@@ -26,15 +55,21 @@ module Keyremac
   class Key
     include Keyable
 
-    attr_reader :mods
+    attr_reader :code, :mods
 
     def to_key
       self
     end
 
     def initialize(name)
-      @name = name
-      @mods = Set.new
+      if key = SHIFT_TABLE[name]
+        @code = SYMBOL_TABLE[key] || key
+        @mods = Set.new
+        @mods.add :SHIFT_L
+      else
+        @code = SYMBOL_TABLE[name] || name
+        @mods = Set.new
+      end
     end
 
     def add_mod(mod)
@@ -51,3 +86,9 @@ class Symbol
   end
 end
 
+class String
+  include Keyremac::Keyable
+  def to_key
+    Keyremac::Key.new self.to_s
+  end
+end

@@ -3,12 +3,12 @@ module Keyremac
   class Key
     def dump(xml)
       if @mods.empty?
-        "KeyCode::#{@name.upcase}"
+        "KeyCode::#{code.upcase}"
       else
         mods = @mods.to_a
         mods = mods.map { |mod| "ModifierFlag::#{mod.to_s}" }
         mods = mods.join(',')
-        "KeyCode::#{@name.upcase}, #{mods}"
+        "KeyCode::#{code.upcase}, #{mods}"
       end
     end
   end
