@@ -39,7 +39,8 @@ module Keyremac
 
   class KeyOverlaidModifier
     def dump(xml)
-      xml.autogen "__KeyOverlaidModifier__ #{key.dump(xml)}, #{mod.dump(xml)}"
+      seqs = [key, mod, *keys].map { |k| k.dump(xml) }.join(', ')
+      xml.autogen "__KeyOverlaidModifier__ #{seqs}"
     end
   end
 

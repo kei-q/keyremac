@@ -116,5 +116,10 @@ describe 'dump' do
       expected = "<autogen>__KeyOverlaidModifier__ KeyCode::JIS_EISUU, KeyCode::COMMAND_L</autogen>\n"
       (:JIS_EISUU.overlaid:COMMAND_L).dump(@xml).must_equal expected
     end
+    it 'keys' do
+      expected = "<autogen>__KeyOverlaidModifier__ KeyCode::CONTROL_L, KeyCode::CONTROL_L, KeyCode::JIS_EISUU, KeyCode::ESCAPE</autogen>\n"
+      autogen = :CONTROL_L .overlaid :CONTROL_L, keys: [:JIS_EISUU, :ESCAPE]
+      autogen.dump(@xml).must_equal expected
+    end
   end
 end

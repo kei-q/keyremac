@@ -58,6 +58,11 @@ describe 'root' do
     it 'basic' do
       (:JIS_EISUU .overlaid :COMMAND_L).class.must_equal Keyremac::KeyOverlaidModifier
     end
+
+    it 'keys' do
+      autogen = :CONTROL_L .overlaid :CONTROL_L, keys: [:JIS_EISUU, :ESCAPE]
+      autogen.class.must_equal Keyremac::KeyOverlaidModifier
+    end
   end
 
   describe 'mods' do

@@ -27,7 +27,7 @@ module Keyremac
 
   class KeyToKey < Struct.new(:from, :to); end
   class KeyToConsumer < Struct.new(:from, :to); end
-  class KeyOverlaidModifier < Struct.new(:key, :mod); end
+  class KeyOverlaidModifier < Struct.new(:key, :mod, :keys); end
 
   # container
   # ====================================

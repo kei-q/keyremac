@@ -22,7 +22,7 @@ end
 :F12 .to :VOLUME_UP
 
 :JIS_EISUU .overlaid :COMMAND_L
-
+:CONTROL_L .overlaid :CONTROL_L, keys: [:JIS_EISUU, :ESCAPE]
 
 # item_ do
 #   name_ 'hoge'
