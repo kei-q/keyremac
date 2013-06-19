@@ -6,53 +6,43 @@ require 'keyremac/dump'
 describe 'dump' do
   before do
     @root = Keyremac::Root.new
+    @xml = Builder::XmlMarkup.new(indent: 2)
   end
 
-  ROOT = <<-EOR
+  it 'rootが出力される' do
+    expected = <<-EOR
 <?xml version="1.0" encoding="UTF-8"?>
 <root>
   <item>
   </item>
-%s</root>
-  EOR
-
-  it 'rootが出力される' do
-    @root.dump.must_equal (ROOT % '')
-  end
-
-  it '任意のtagを書くことができる' do
-    @root.item_ {}
-    expected = ROOT % <<-EOT
-  <item>
-  </item>
-    EOT
+</root>
+    EOR
     @root.dump.must_equal expected
   end
 
-  describe 'item' do
-    before do
-      @xml = Builder::XmlMarkup.new(indent: 2)
-    end
+  it '任意のtagを書くことができる' do
+    expected = <<-EOT
+<item>
+</item>
+    EOT
+    @root.item_ {}.dump(@xml).must_equal expected
+  end
 
-    it '' do
-      @root.item {}
-      expected = ROOT % <<-EOT
-  <item>
-  </item>
-      EOT
-      @root.dump.must_equal expected
+  describe 'item' do
+    it 'blank' do
+      expected = "<item>\n</item>\n"
+      @root.item {}.dump(@xml).must_equal expected
     end
 
     it 'raw' do
+      expected = <<-EOT
+<item>
+  <autogen>__KeyToKey__ KeyCode::J, KeyCode::K</autogen>
+</item>
+      EOT
       @root.item {
         autogen_ '__KeyToKey__ KeyCode::J, KeyCode::K'
-      }
-      expected = ROOT % <<-EOT
-  <item>
-    <autogen>__KeyToKey__ KeyCode::J, KeyCode::K</autogen>
-  </item>
-      EOT
-      @root.dump.must_equal expected
+      }.dump(@xml).must_equal expected
     end
 
     it 'app' do
@@ -76,30 +66,23 @@ describe 'dump' do
 
   describe 'app' do
     it 'raw' do
-      @root.app('TERMINAL') {}
-      expected = ROOT % <<-EOT
-  <item>
-    <only>TERMINAL</only>
-  </item>
+      expected = <<-EOT
+<item>
+  <only>TERMINAL</only>
+</item>
       EOT
-      @root.dump.must_equal expected
+      @root.app('TERMINAL') {}.dump(@xml).must_equal expected
     end
   end
 
   describe 'to' do
-    before do
-      @xml = Builder::XmlMarkup.new(indent: 2)
-    end
     it 'basic' do
-      item = @root.item {
-        :j .to :k
-      }
-      expected = ROOT % <<-EOT
-  <item>
-    <autogen>__KeyToKey__ KeyCode::J, KeyCode::K</autogen>
-  </item>
+      expected = <<-EOT
+<item>
+  <autogen>__KeyToKey__ KeyCode::J, KeyCode::K</autogen>
+</item>
       EOT
-      @root.dump.must_equal expected
+      @root.item { :j .to :k }.dump(@xml).must_equal expected
     end
 
     it '複数' do
@@ -127,9 +110,6 @@ describe 'dump' do
   end
 
   describe 'mods' do
-    before do
-      @xml = Builder::XmlMarkup.new(indent: 2)
-    end
     it 'ctrl' do
       expected = "KeyCode::J, ModifierFlag::CONTROL_L"
       :j.ctrl.dump(@xml).must_equal expected
@@ -147,9 +127,6 @@ describe 'dump' do
   end
 
   describe 'consumer' do
-    before do
-      @xml = Builder::XmlMarkup.new(indent: 2)
-    end
     it 'consumer_key' do
       expected = "ConsumerKeyCode::MUSIC_PREV"
       :MUSIC_PREV.to_key.dump(@xml).must_equal expected
@@ -161,9 +138,6 @@ describe 'dump' do
   end
 
   describe 'key_overlaid_modifier' do
-    before do
-      @xml = Builder::XmlMarkup.new(indent: 2)
-    end
     it 'basic' do
       expected = "<autogen>__KeyOverlaidModifier__ KeyCode::JIS_EISUU, KeyCode::COMMAND_L, KeyCode::JIS_EISUU</autogen>\n"
       (:JIS_EISUU.overlaid:COMMAND_L).dump(@xml).must_equal expected

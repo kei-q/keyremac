@@ -98,14 +98,14 @@ module Keyremac
     end
 
     def item(app: nil, inputsource: nil, &block)
-      item = Item.new
-      item.only_ app if app
-      item.inputsource_only_ inputsource if inputsource
-      @children << item
-      Keyremac.set_focus item do
-        item.instance_eval(&block)
-      end
-      item
+      Item.new.tap { |item|
+        item.only_ app if app
+        item.inputsource_only_ inputsource if inputsource
+        @children << item
+        Keyremac.set_focus item do
+          item.instance_eval(&block)
+        end
+      }
     end
 
     def app(only, **options, &block)
