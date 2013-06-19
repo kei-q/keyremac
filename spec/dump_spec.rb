@@ -65,6 +65,9 @@ describe 'dump' do
   end
 
   describe 'to' do
+    before do
+      @xml = Builder::XmlMarkup.new(indent: 2)
+    end
     it 'basic' do
       item = @root.item {
         :j .to :k
@@ -75,6 +78,11 @@ describe 'dump' do
   </item>
       EOT
       @root.dump.must_equal expected
+    end
+
+    it '複数' do
+      expected = "<autogen>__KeyToKey__ KeyCode::J, KeyCode::K, KeyCode::L</autogen>\n"
+      (:j .to :k, :l).dump(@xml).must_equal expected
     end
   end
 

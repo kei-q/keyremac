@@ -53,6 +53,11 @@ describe 'root' do
       :j .to :k
       @root.root_item.children.length.must_equal 1
     end
+
+    it '複数のkeyを渡せる' do
+      :a .to :b, :c
+      @root.root_item.children.length.must_equal 1
+    end
   end
 
   describe 'overlaid' do

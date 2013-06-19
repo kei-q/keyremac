@@ -65,12 +65,12 @@ module Keyremac
       define_method("#{k}?", -> { self.to_key.mods.include? v })
     }
 
-    def to(key)
-      key = key.to_key
+    def to(*keys)
+      key = keys.first.to_key
       autogen = if key.consumer_key?
         Keyremac::KeyToConsumer.new self.to_key, key
       else
-        Keyremac::KeyToKey.new self.to_key, key
+        Keyremac::KeyToKey.new self.to_key, keys.map(&:to_key)
       end
       Keyremac.get_focus.add autogen
       autogen

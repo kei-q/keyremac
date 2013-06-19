@@ -27,7 +27,8 @@ module Keyremac
 
   class KeyToKey
     def dump(xml)
-      xml.autogen "__KeyToKey__ #{from.dump(xml)}, #{to.dump(xml)}"
+      seqs = [from, *to].map{ |k| k.dump(xml) }.join(', ')
+      xml.autogen "__KeyToKey__ #{seqs}"
     end
   end
 
