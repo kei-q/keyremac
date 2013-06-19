@@ -60,6 +60,7 @@ module Keyremac
       opt:    :OPTION_L,
       cmd:    :COMMAND_L,
       extra1: :EXTRA1,
+      none:   :NONE,
     }.each { |k,v|
       define_method(k, -> { self.to_key.add_mod v })
       define_method("#{k}?", -> { self.to_key.mods.include? v })

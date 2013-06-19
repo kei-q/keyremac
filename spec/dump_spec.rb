@@ -127,12 +127,22 @@ describe 'dump' do
   end
 
   describe 'mods' do
+    before do
+      @xml = Builder::XmlMarkup.new(indent: 2)
+    end
     it 'ctrl' do
-      :j.ctrl .to :k
-      expected = ROOT2 % <<-EOT
-    <autogen>__KeyToKey__ KeyCode::J, ModifierFlag::CONTROL_L, KeyCode::K</autogen>
-      EOT
-      @root.dump.must_equal expected
+      expected = "KeyCode::J, ModifierFlag::CONTROL_L"
+      :j.ctrl.dump(@xml).must_equal expected
+    end
+
+    it 'none' do
+      expected = "KeyCode::J, ModifierFlag::NONE"
+      :j.none.dump(@xml).must_equal expected
+    end
+
+    it '複数' do
+      expected = "KeyCode::J, ModifierFlag::CONTROL_L | ModifierFlag::COMMAND_L"
+      :j.ctrl.cmd.dump(@xml).must_equal expected
     end
   end
 

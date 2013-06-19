@@ -60,7 +60,7 @@ app 'SUBLIME', inputsource: 'JAPANESE' do
   :TAB .to :i.ctrl
 end
 
-# item_ 'all_up_down' do
-#   :p.ctrl.none .to :CURSOR_UP
-#   :n.ctrl.none .to :CURSOR_DOWN
-# end
+item_ 'all_up_down' do
+  :p.ctrl.none .to :CURSOR_UP
+  :n.ctrl.none .to :CURSOR_DOWN
+end
