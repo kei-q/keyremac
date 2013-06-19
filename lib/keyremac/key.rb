@@ -4,6 +4,27 @@ require 'keyremac/base'
 require 'set'
 
 module Keyremac
+
+  CONSUMER_KEYS = [
+    'BRIGHTNESS_DOWN',
+    'BRIGHTNESS_UP',
+    'KEYBOARDLIGHT_OFF',
+    'KEYBOARDLIGHT_LOW',
+    'KEYBOARDLIGHT_HIGH',
+    'MUSIC_PREV',
+    'MUSIC_PLAY',
+    'MUSIC_NEXT',
+    'MUSIC_PREV_18',
+    'MUSIC_NEXT_17',
+    'VOLUME_MUTE',
+    'VOLUME_DOWN',
+    'VOLUME_UP',
+    'EJECT',
+    'POWER',
+    'NUMLOCK',
+    'VIDEO_MIRROR',
+  ]
+
   SYMBOL_TABLE = {
     '`'  => 'BACKQUOTE',
     '\\' => 'BACKSLASH',
@@ -32,7 +53,6 @@ module Keyremac
     %q(1234567890-=`qwertyuiop[]asdfghjkl;'\zxcvbnm,./`).each_char.to_a
   )]
 
-
   module Keyable
     {
       ctrl:   :CONTROL_L,
@@ -45,16 +65,38 @@ module Keyremac
       define_method("#{k}?", -> { self.to_key.mods.include? v })
     }
 
-    def to(to)
-      key = Keyremac::KeyToKey.new self.to_key, to.to_key
-      Keyremac.get_focus.add key
-      key
+    def to(key)
+      key = key.to_key
+      autogen = if key.consumer_key?
+        Keyremac::KeyToConsumer.new self.to_key, key
+      else
+        Keyremac::KeyToKey.new self.to_key, key
+      end
+      Keyremac.get_focus.add autogen
+      autogen
     end
+
+    def consumer_key?
+      false
+    end
+
+    def to_key
+      if Keyremac::CONSUMER_KEYS.include?(self.to_s)
+        Keyremac::ConsumerKey.new self.to_s
+      else
+        Keyremac::Key.new self.to_s
+      end
+    end
+  end
+
+  class ConsumerKey < Struct.new(:code)
+    include Keyable
+    def consumer_key?; true end
+    def to_key; self end
   end
 
   class Key
     include Keyable
-
     attr_reader :code, :mods
 
     def to_key
@@ -81,14 +123,8 @@ end
 
 class Symbol
   include Keyremac::Keyable
-  def to_key
-    Keyremac::Key.new self.to_s
-  end
 end
 
 class String
   include Keyremac::Keyable
-  def to_key
-    Keyremac::Key.new self.to_s
-  end
 end

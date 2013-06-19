@@ -1,5 +1,8 @@
 module Keyremac
 
+  # key
+  # ===========================
+
   class Key
     def dump(xml)
       if @mods.empty?
@@ -13,11 +16,29 @@ module Keyremac
     end
   end
 
-  class KeyToKey
+  class ConsumerKey
     def dump(xml)
-      xml.autogen "__KeyToKey__ #{@from.dump(xml)}, #{@to.dump(xml)}"
+      "ConsumerKeyCode::#{code.upcase}"
     end
   end
+
+  # autogen
+  # ===========================
+
+  class KeyToKey
+    def dump(xml)
+      xml.autogen "__KeyToKey__ #{from.dump(xml)}, #{to.dump(xml)}"
+    end
+  end
+
+  class KeyToConsumer
+    def dump(xml)
+      xml.autogen "__KeyToConsumer__ #{from.dump(xml)}, #{to.dump(xml)}"
+    end
+  end
+
+  # container
+  # ===========================
 
   class Raw
     def dump(xml)

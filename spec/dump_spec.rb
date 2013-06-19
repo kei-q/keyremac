@@ -93,4 +93,18 @@ describe 'dump' do
       @root.dump.must_equal expected
     end
   end
+
+  describe 'consumer' do
+    before do
+      @xml = Builder::XmlMarkup.new(indent: 2)
+    end
+    it 'consumer_key' do
+      expected = "ConsumerKeyCode::MUSIC_PREV"
+      :MUSIC_PREV.to_key.dump(@xml).must_equal expected
+    end
+    it 'key_to_consumer' do
+      expected = "<autogen>__KeyToConsumer__ KeyCode::F7, ConsumerKeyCode::MUSIC_PREV</autogen>\n"
+      (:F7.to:MUSIC_PREV).dump(@xml).must_equal expected
+    end
+  end
 end

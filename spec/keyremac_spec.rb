@@ -70,4 +70,19 @@ describe 'root' do
       '1'.to_key.code.must_equal 'KEY_1'
     end
   end
+
+  describe 'consumer_key' do
+    it 'basic' do
+      :MUSIC_PREV.to_key.class.must_equal Keyremac::ConsumerKey
+    end
+  end
+
+  describe 'autogen' do
+    it 'KeyToKey' do
+      (:j .to :k).class.must_equal Keyremac::KeyToKey
+    end
+    it 'KeyToConsumer' do
+      (:F7 .to :MUSIC_PREV).class.must_equal Keyremac::KeyToConsumer
+    end
+  end
 end

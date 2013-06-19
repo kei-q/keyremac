@@ -25,11 +25,10 @@ module Keyremac
   # autogen
   # ====================================
 
-  class KeyToKey
-    def initialize(from, to)
-      @from = from
-      @to = to
-    end
+  class KeyToKey < Struct.new(:from, :to)
+  end
+
+  class KeyToConsumer < Struct.new(:from, :to)
   end
 
   # container
