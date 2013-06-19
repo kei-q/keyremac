@@ -23,6 +23,7 @@ end
 
 :JIS_EISUU .overlaid :COMMAND_L
 :CONTROL_L .overlaid :CONTROL_L, keys: [:JIS_EISUU, :ESCAPE]
+:SPACE     .overlaid :SHIFT_L, repeat: true
 
 # item_ do
 #   name_ 'hoge'

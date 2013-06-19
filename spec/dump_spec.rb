@@ -113,12 +113,18 @@ describe 'dump' do
       @xml = Builder::XmlMarkup.new(indent: 2)
     end
     it 'basic' do
-      expected = "<autogen>__KeyOverlaidModifier__ KeyCode::JIS_EISUU, KeyCode::COMMAND_L</autogen>\n"
+      expected = "<autogen>__KeyOverlaidModifier__ KeyCode::JIS_EISUU, KeyCode::COMMAND_L, KeyCode::JIS_EISUU</autogen>\n"
       (:JIS_EISUU.overlaid:COMMAND_L).dump(@xml).must_equal expected
     end
     it 'keys' do
       expected = "<autogen>__KeyOverlaidModifier__ KeyCode::CONTROL_L, KeyCode::CONTROL_L, KeyCode::JIS_EISUU, KeyCode::ESCAPE</autogen>\n"
       autogen = :CONTROL_L .overlaid :CONTROL_L, keys: [:JIS_EISUU, :ESCAPE]
+      autogen.dump(@xml).must_equal expected
+    end
+
+    it 'repeat' do
+      expected = "<autogen>__KeyOverlaidModifierWithRepeat__ KeyCode::SPACE, KeyCode::SHIFT_L, KeyCode::SPACE</autogen>\n"
+      autogen = :SPACE .overlaid :SHIFT_L, repeat: true
       autogen.dump(@xml).must_equal expected
     end
   end

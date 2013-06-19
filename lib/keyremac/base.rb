@@ -27,7 +27,19 @@ module Keyremac
 
   class KeyToKey < Struct.new(:from, :to); end
   class KeyToConsumer < Struct.new(:from, :to); end
-  class KeyOverlaidModifier < Struct.new(:key, :mod, :keys); end
+  class KeyOverlaidModifier # < Struct.new(:key, :mod, :keys)
+    attr_reader :key, :mod, :keys, :repeat
+    def initialize(key, mod, keys: [], repeat: false)
+      @key = key
+      @mod = mod
+      @keys = keys == [] ? [key] : keys
+      @repeat = repeat
+    end
+
+    def repeat?
+      @repeat
+    end
+  end
 
   # container
   # ====================================

@@ -63,6 +63,16 @@ describe 'root' do
       autogen = :CONTROL_L .overlaid :CONTROL_L, keys: [:JIS_EISUU, :ESCAPE]
       autogen.class.must_equal Keyremac::KeyOverlaidModifier
     end
+
+    it 'repeat: false' do
+      autogen = :CONTROL_L .overlaid :CONTROL_L
+      autogen.repeat?.must_equal false
+    end
+
+    it 'repeat: true' do
+      autogen = :CONTROL_L .overlaid :CONTROL_L, repeat: true
+      autogen.repeat?.must_equal true
+    end
   end
 
   describe 'mods' do

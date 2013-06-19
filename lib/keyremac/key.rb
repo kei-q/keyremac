@@ -76,8 +76,8 @@ module Keyremac
       autogen
     end
 
-    def overlaid(mod, keys: [])
-      autogen = Keyremac::KeyOverlaidModifier.new self.to_key, mod.to_key, keys.map(&:to_key)
+    def overlaid(mod, keys: [], repeat: false)
+      autogen = Keyremac::KeyOverlaidModifier.new self.to_key, mod.to_key, keys: keys.map(&:to_key), repeat: repeat
       Keyremac.get_focus.add autogen
       autogen
     end
