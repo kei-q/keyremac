@@ -52,6 +52,18 @@ describe 'dump' do
     end
   end
 
+  describe 'app' do
+    it 'raw' do
+      @root.app('TERMINAL') {}
+      expected = ROOT % <<-EOT
+  <item>
+    <only>TERMINAL</only>
+  </item>
+      EOT
+      @root.dump.must_equal expected
+    end
+  end
+
   describe 'to' do
     it 'basic' do
       item = @root.item {

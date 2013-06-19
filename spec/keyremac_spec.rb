@@ -33,6 +33,14 @@ describe 'root' do
     end
   end
 
+  describe 'app' do
+    it 'raw' do
+      container = @root.app('dummy') { }
+      container.class.must_equal Keyremac::Item
+      container.children.length.must_equal 1
+    end
+  end
+
   describe 'to' do
     it 'basic' do
       item = @root.item {

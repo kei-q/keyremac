@@ -105,6 +105,16 @@ module Keyremac
       end
       item
     end
+
+    def app(only, &block)
+      item = Item.new
+      @children << item
+      item.only_ only
+      Keyremac.set_focus item do
+        item.instance_eval(&block)
+      end
+      item
+    end
   end
 
   # delegator
