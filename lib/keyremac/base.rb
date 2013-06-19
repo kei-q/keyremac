@@ -97,8 +97,10 @@ module Keyremac
       @children = []
     end
 
-    def item(&block)
+    def item(app: nil, inputsource: nil, &block)
       item = Item.new
+      item.only_ app if app
+      item.inputsource_only_ inputsource if inputsource
       @children << item
       Keyremac.set_focus item do
         item.instance_eval(&block)
@@ -106,14 +108,9 @@ module Keyremac
       item
     end
 
-    def app(only, &block)
-      item = Item.new
-      @children << item
-      item.only_ only
-      Keyremac.set_focus item do
-        item.instance_eval(&block)
-      end
-      item
+    def app(only, **options, &block)
+      options[:app] = only
+      item(**options, &block)
     end
   end
 

@@ -38,12 +38,29 @@ end
 :SHIFT_L          .to :VK_MODIFIER_EXTRA1
 
 app 'TERMINAL' do
+  "pnco".chars { |c| c.extra1 .to :JIS_EISUU, :t.ctrl, c }
+  "jkl" .chars { |c| c.extra1 .to :JIS_EISUU, :t.ctrl, c }
+  "du"  .chars { |c| c.extra1 .to :t.ctrl, '['.ctrl, c.ctrl }
 end
-# item_ do
-#   name_ 'hoge'
-#   :c .to :d
-# end
 
-# item do
-#   :j .to :k
+appdef_ do
+  appname_ "SUBLIME"
+  equal_ "com.sublimetext.3"
+  equal_ "com.sublimetext.2"
+end
+
+['SUBLIME', 'GOOGLE_CHROME'].each { |app_name|
+  app app_name do
+    :p.extra1 .to :JIS_EISUU, '['.cmd.shift
+    :n.extra1 .to :JIS_EISUU, ']'.cmd.shift
+  end
+}
+
+app 'SUBLIME', inputsource: 'JAPANESE' do
+  :TAB .to :i.ctrl
+end
+
+# item_ 'all_up_down' do
+#   :p.ctrl.none .to :CURSOR_UP
+#   :n.ctrl.none .to :CURSOR_DOWN
 # end

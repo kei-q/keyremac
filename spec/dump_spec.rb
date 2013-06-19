@@ -30,6 +30,10 @@ describe 'dump' do
   end
 
   describe 'item' do
+    before do
+      @xml = Builder::XmlMarkup.new(indent: 2)
+    end
+
     it '' do
       @root.item {}
       expected = ROOT % <<-EOT
@@ -49,6 +53,24 @@ describe 'dump' do
   </item>
       EOT
       @root.dump.must_equal expected
+    end
+
+    it 'app' do
+      expected = <<-EOT
+<item>
+  <only>TERMINAL</only>
+</item>
+      EOT
+      @root.item(app: 'TERMINAL') {}.dump(@xml).must_equal expected
+    end
+
+    it 'inputsource' do
+      expected = <<-EOT
+<item>
+  <inputsource_only>JAPANESE</inputsource_only>
+</item>
+      EOT
+      @root.item(inputsource: 'JAPANESE') {}.dump(@xml).must_equal expected
     end
   end
 

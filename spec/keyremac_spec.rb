@@ -31,6 +31,16 @@ describe 'root' do
       }
       @root.children.length.must_equal 1
     end
+
+    it 'app' do
+      @root.item(app: 'TERMINAL') { }
+      @root.children.length.must_equal 1
+    end
+
+    it 'inputsource' do
+      @root.item(inputsource: 'JAPANESE') { }
+      @root.children.length.must_equal 1
+    end
   end
 
   describe 'app' do
