@@ -21,6 +21,9 @@ end
 :F11 .to :VOLUME_DOWN
 :F12 .to :VOLUME_UP
 
+:JIS_EISUU .overlaid :COMMAND_L
+
+
 # item_ do
 #   name_ 'hoge'
 #   :c .to :d

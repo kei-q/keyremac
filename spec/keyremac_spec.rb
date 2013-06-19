@@ -47,6 +47,19 @@ describe 'root' do
     end
   end
 
+  describe 'overlaid' do
+    it 'basic' do
+      item = @root.item {
+        :JIS_EISUU .overlaid :COMMAND_L
+      }
+      item.children.length.must_equal 1
+    end
+
+    it 'basic' do
+      (:JIS_EISUU .overlaid :COMMAND_L).class.must_equal Keyremac::KeyOverlaidModifier
+    end
+  end
+
   describe 'mods' do
     [:ctrl, :shift, :opt, :cmd, :extra1].each { |mod|
       it mod do

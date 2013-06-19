@@ -25,11 +25,9 @@ module Keyremac
   # autogen
   # ====================================
 
-  class KeyToKey < Struct.new(:from, :to)
-  end
-
-  class KeyToConsumer < Struct.new(:from, :to)
-  end
+  class KeyToKey < Struct.new(:from, :to); end
+  class KeyToConsumer < Struct.new(:from, :to); end
+  class KeyOverlaidModifier < Struct.new(:key, :mod); end
 
   # container
   # ====================================

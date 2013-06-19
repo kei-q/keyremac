@@ -37,6 +37,12 @@ module Keyremac
     end
   end
 
+  class KeyOverlaidModifier
+    def dump(xml)
+      xml.autogen "__KeyOverlaidModifier__ #{key.dump(xml)}, #{mod.dump(xml)}"
+    end
+  end
+
   # container
   # ===========================
 

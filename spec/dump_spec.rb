@@ -107,4 +107,14 @@ describe 'dump' do
       (:F7.to:MUSIC_PREV).dump(@xml).must_equal expected
     end
   end
+
+  describe 'key_overlaid_modifier' do
+    before do
+      @xml = Builder::XmlMarkup.new(indent: 2)
+    end
+    it 'basic' do
+      expected = "<autogen>__KeyOverlaidModifier__ KeyCode::JIS_EISUU, KeyCode::COMMAND_L</autogen>\n"
+      (:JIS_EISUU.overlaid:COMMAND_L).dump(@xml).must_equal expected
+    end
+  end
 end
