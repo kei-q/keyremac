@@ -3,6 +3,15 @@ require 'minitest/autorun'
 require 'keyremac/base'
 require 'keyremac/dump'
 
+module MiniTest::Assertions
+  def assert_xml(expected, rule)
+    xml = Builder::XmlMarkup.new(indent: 2)
+    actual = rule.dump(xml)
+    assert actual == expected, message { diff expected, actual }
+  end
+end
+Object.infect_an_assertion :assert_xml, :must_be_xml
+
 describe 'dump' do
   before do
     @root = Keyremac::Root.new
@@ -17,77 +26,60 @@ describe 'dump' do
   </item>
 </root>
     EOR
-    @root.dump.must_equal expected
+    @root.must_be_xml expected
   end
 
   it '任意のtagを書くことができる' do
-    expected = <<-EOT
-<item>
-</item>
-    EOT
-    @root.item_ {}.dump(@xml).must_equal expected
+    expected = "<hoge>\n</hoge>\n"
+    @root.hoge_ {}.must_be_xml expected
   end
 
   describe 'item' do
+    ITEM = <<-EOI
+<item>
+  %s
+</item>
+    EOI
+
     it 'blank' do
       expected = "<item>\n</item>\n"
-      @root.item {}.dump(@xml).must_equal expected
+      @root.item {}.must_be_xml expected
     end
 
     it 'raw' do
-      expected = <<-EOT
-<item>
-  <autogen>__KeyToKey__ KeyCode::J, KeyCode::K</autogen>
-</item>
-      EOT
+      expected = ITEM % "<autogen>__KeyToKey__ KeyCode::J, KeyCode::K</autogen>"
       @root.item {
         autogen_ '__KeyToKey__ KeyCode::J, KeyCode::K'
-      }.dump(@xml).must_equal expected
+      }.must_be_xml expected
     end
 
     it 'app' do
-      expected = <<-EOT
-<item>
-  <only>TERMINAL</only>
-</item>
-      EOT
-      @root.item(app: 'TERMINAL') {}.dump(@xml).must_equal expected
+      expected = ITEM % "<only>TERMINAL</only>"
+      @root.item(app: 'TERMINAL') {}.must_be_xml expected
     end
 
     it 'inputsource' do
-      expected = <<-EOT
-<item>
-  <inputsource_only>JAPANESE</inputsource_only>
-</item>
-      EOT
-      @root.item(inputsource: 'JAPANESE') {}.dump(@xml).must_equal expected
+      expected = ITEM % "<inputsource_only>JAPANESE</inputsource_only>"
+      @root.item(inputsource: 'JAPANESE') {}.must_be_xml expected
     end
   end
 
   describe 'app' do
     it 'raw' do
-      expected = <<-EOT
-<item>
-  <only>TERMINAL</only>
-</item>
-      EOT
-      @root.app('TERMINAL') {}.dump(@xml).must_equal expected
+      expected = ITEM % "<only>TERMINAL</only>"
+      @root.app('TERMINAL') {}.must_be_xml expected
     end
   end
 
   describe 'to' do
     it 'basic' do
-      expected = <<-EOT
-<item>
-  <autogen>__KeyToKey__ KeyCode::J, KeyCode::K</autogen>
-</item>
-      EOT
-      @root.item { :j .to :k }.dump(@xml).must_equal expected
+      expected = "<autogen>__KeyToKey__ KeyCode::J, KeyCode::K</autogen>\n"
+      (:j .to :k).must_be_xml expected
     end
 
     it '複数' do
       expected = "<autogen>__KeyToKey__ KeyCode::J, KeyCode::K, KeyCode::L</autogen>\n"
-      (:j .to :k, :l).dump(@xml).must_equal expected
+      (:j .to :k, :l).must_be_xml expected
     end
   end
 
@@ -95,16 +87,15 @@ describe 'dump' do
 <?xml version="1.0" encoding="UTF-8"?>
 <root>
   <item>
-%s  </item>
+    %s
+  </item>
 </root>
   EOR
 
   describe 'root直下' do
-    it 'root直下' do
+    it 'root直下にautogenを書くとroot_itemに追加される' do
       :j .to :k
-      expected = ROOT2 % <<-EOT
-    <autogen>__KeyToKey__ KeyCode::J, KeyCode::K</autogen>
-      EOT
+      expected = ROOT2 % "<autogen>__KeyToKey__ KeyCode::J, KeyCode::K</autogen>"
       @root.dump.must_equal expected
     end
   end
@@ -112,46 +103,46 @@ describe 'dump' do
   describe 'mods' do
     it 'ctrl' do
       expected = "KeyCode::J, ModifierFlag::CONTROL_L"
-      :j.ctrl.dump(@xml).must_equal expected
+      :j.ctrl.must_be_xml expected
     end
 
     it 'none' do
       expected = "KeyCode::J, ModifierFlag::NONE"
-      :j.none.dump(@xml).must_equal expected
+      :j.none.must_be_xml expected
     end
 
     it '複数' do
       expected = "KeyCode::J, ModifierFlag::CONTROL_L | ModifierFlag::COMMAND_L"
-      :j.ctrl.cmd.dump(@xml).must_equal expected
+      :j.ctrl.cmd.must_be_xml expected
     end
   end
 
   describe 'consumer' do
     it 'consumer_key' do
       expected = "ConsumerKeyCode::MUSIC_PREV"
-      :MUSIC_PREV.to_key.dump(@xml).must_equal expected
+      :MUSIC_PREV.to_key.must_be_xml expected
     end
     it 'key_to_consumer' do
       expected = "<autogen>__KeyToConsumer__ KeyCode::F7, ConsumerKeyCode::MUSIC_PREV</autogen>\n"
-      (:F7.to:MUSIC_PREV).dump(@xml).must_equal expected
+      (:F7.to:MUSIC_PREV).must_be_xml expected
     end
   end
 
   describe 'key_overlaid_modifier' do
     it 'basic' do
       expected = "<autogen>__KeyOverlaidModifier__ KeyCode::JIS_EISUU, KeyCode::COMMAND_L, KeyCode::JIS_EISUU</autogen>\n"
-      (:JIS_EISUU.overlaid:COMMAND_L).dump(@xml).must_equal expected
+      (:JIS_EISUU.overlaid:COMMAND_L).must_be_xml expected
     end
     it 'keys' do
       expected = "<autogen>__KeyOverlaidModifier__ KeyCode::CONTROL_L, KeyCode::CONTROL_L, KeyCode::JIS_EISUU, KeyCode::ESCAPE</autogen>\n"
       autogen = :CONTROL_L .overlaid :CONTROL_L, keys: [:JIS_EISUU, :ESCAPE]
-      autogen.dump(@xml).must_equal expected
+      autogen.must_be_xml expected
     end
 
     it 'repeat' do
       expected = "<autogen>__KeyOverlaidModifierWithRepeat__ KeyCode::SPACE, KeyCode::SHIFT_L, KeyCode::SPACE</autogen>\n"
       autogen = :SPACE .overlaid :SHIFT_L, repeat: true
-      autogen.dump(@xml).must_equal expected
+      autogen.must_be_xml expected
     end
   end
 end

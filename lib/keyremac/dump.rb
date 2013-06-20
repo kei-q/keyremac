@@ -74,8 +74,8 @@ module Keyremac
   end
 
   class Root
-    def dump
-      xml = Builder::XmlMarkup.new(indent: 2)
+    def dump(xml = nil)
+      xml ||= Builder::XmlMarkup.new(indent: 2)
       xml.instruct!
       xml.root do
         @root_item.dump xml
