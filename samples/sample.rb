@@ -37,6 +37,10 @@ end
 :CONTROL_L.extra1 .to :CONTROL_L.shift
 :SHIFT_L          .to :VK_MODIFIER_EXTRA1
 
+# ctrl-npを強制的に↑↓に
+:p.ctrl.none .to :CURSOR_UP
+:n.ctrl.none .to :CURSOR_DOWN
+
 app 'TERMINAL' do
   "pnco".chars { |c| c.extra1 .to :JIS_EISUU, :t.ctrl, c }
   "jkl" .chars { |c| c.extra1 .to :JIS_EISUU, :t.ctrl, c }
@@ -58,9 +62,4 @@ end
 
 app 'SUBLIME', inputsource: 'JAPANESE' do
   :TAB .to :i.ctrl
-end
-
-item_ 'all_up_down' do
-  :p.ctrl.none .to :CURSOR_UP
-  :n.ctrl.none .to :CURSOR_DOWN
 end
