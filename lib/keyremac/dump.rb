@@ -66,6 +66,8 @@ module Keyremac
   class Item
     def dump(xml)
       xml.item do
+        xml.name @name
+        xml.identifier "private.#{@name}"
         @children.each { |child|
           child.dump xml
         }

@@ -80,8 +80,19 @@ module Keyremac
 
   class Item
     include Container
-    def initialize
+
+    @@identifier = 'a'
+    def self.identifier
+      @@identifier
+    end
+    def self.reset_identifier
+      @@identifier = 'a'
+    end
+
+    def initialize(name = nil)
       @children = []
+      @name = name || @@identifier
+      @@identifier = @@identifier.succ
     end
   end
 
@@ -91,7 +102,7 @@ module Keyremac
     attr_reader :root_item
 
     def initialize
-      @root_item = Item.new
+      @root_item = Item.new 'root_item'
       Keyremac.focus.clear
       Keyremac.focus << @root_item
       @children = []

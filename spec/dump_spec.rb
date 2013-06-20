@@ -16,6 +16,7 @@ describe 'dump' do
   before do
     @root = Keyremac::Root.new
     @xml = Builder::XmlMarkup.new(indent: 2)
+    Keyremac::Item.reset_identifier
   end
 
   it 'rootが出力される' do
@@ -23,6 +24,8 @@ describe 'dump' do
 <?xml version="1.0" encoding="UTF-8"?>
 <root>
   <item>
+    <name>root_item</name>
+    <identifier>private.root_item</identifier>
   </item>
 </root>
     EOR
@@ -37,12 +40,19 @@ describe 'dump' do
   describe 'item' do
     ITEM = <<-EOI
 <item>
+  <name>a</name>
+  <identifier>private.a</identifier>
   %s
 </item>
     EOI
 
     it 'blank' do
-      expected = "<item>\n</item>\n"
+      expected = <<-EOI
+<item>
+  <name>a</name>
+  <identifier>private.a</identifier>
+</item>
+      EOI
       @root.item {}.must_be_xml expected
     end
 
@@ -87,6 +97,8 @@ describe 'dump' do
 <?xml version="1.0" encoding="UTF-8"?>
 <root>
   <item>
+    <name>root_item</name>
+    <identifier>private.root_item</identifier>
     %s
   </item>
 </root>
