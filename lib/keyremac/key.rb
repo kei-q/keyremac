@@ -55,10 +55,10 @@ module Keyremac
 
   module Keyable
     {
-      ctrl:   :CONTROL_L,
-      shift:  :SHIFT_L,
-      opt:    :OPTION_L,
-      cmd:    :COMMAND_L,
+      ctrl:   :VK_CONTROL,
+      shift:  :VK_SHIFT,
+      opt:    :VK_OPTION,
+      cmd:    :VK_COMMAND,
       extra1: :EXTRA1,
       none:   :NONE,
     }.each { |k,v|
@@ -111,13 +111,13 @@ module Keyremac
     end
 
     def initialize(name)
+      @mods = Set.new
+
       if key = SHIFT_TABLE[name]
         @code = SYMBOL_TABLE[key] || key
-        @mods = Set.new
-        @mods.add :SHIFT_L
+        self.shift
       else
         @code = SYMBOL_TABLE[name] || name
-        @mods = Set.new
       end
     end
 

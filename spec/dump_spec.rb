@@ -114,7 +114,7 @@ describe 'dump' do
 
   describe 'mods' do
     it 'ctrl' do
-      expected = "KeyCode::J, ModifierFlag::CONTROL_L"
+      expected = "KeyCode::J, VK_CONTROL"
       :j.ctrl.must_be_xml expected
     end
 
@@ -124,7 +124,7 @@ describe 'dump' do
     end
 
     it '複数' do
-      expected = "KeyCode::J, ModifierFlag::CONTROL_L | ModifierFlag::COMMAND_L"
+      expected = "KeyCode::J, VK_CONTROL | VK_COMMAND"
       :j.ctrl.cmd.must_be_xml expected
     end
   end

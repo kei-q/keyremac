@@ -9,7 +9,14 @@ module Keyremac
         "KeyCode::#{code.upcase}"
       else
         mods = @mods.to_a
-        mods = mods.map { |mod| "ModifierFlag::#{mod.to_s}" }
+        mods = mods.map { |mod|
+          mod = mod.to_s
+          if mod =~ /^VK_/
+            mod
+          else
+            "ModifierFlag::#{mod}"
+          end
+        }
         mods = mods.join(' | ')
         "KeyCode::#{code.upcase}, #{mods}"
       end
