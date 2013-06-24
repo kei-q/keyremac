@@ -40,6 +40,8 @@ end
 # ctrl-npを強制的に↑↓に
 :p.ctrl.none .to :CURSOR_UP
 :n.ctrl.none .to :CURSOR_DOWN
+:b.ctrl.none .to :CURSOR_LEFT
+:f.ctrl.none .to :CURSOR_RIGHT
 
 app 'TERMINAL' do
   "pnco".chars { |c| c.extra1 .to :JIS_EISUU, :t.ctrl, c }

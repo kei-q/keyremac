@@ -1,68 +1,97 @@
 # Keyremac
 
-KeyRemap4MacBookを簡単に設定するためのDSLを提供します。
+*Keyremac*はRubyでKeyRemap4MacBookの設定を行うgemです。
+大量のcheckboxを扱うのが苦手な方や、XMLを手で編集するのが好きではない方向けに、
+KeyRemap4MacBookの設定を行うDSLを提供します。
 
-## 必要なもの
+## dependency
 
-KeyRemap4MacBook v7.0.0 以上
-ruby v2.0.0 以上
+KeyRemap4MacBook v7.0.0+
+    https://pqrs.org/macosx/keyremap4macbook/
+ruby v2.0.0+
 
 ## Installation
 
     $ gem install keyremac --source http://github.com/keqh/keyremac/raw/master
 
-## Example
+## Getting Started
 
-### 設定の記述
+```bash
+$ cat > private.rb
+require 'keyremac'
+:SPACE .to :TAB
 
-以下の様なsourceを用意します。ここでは仮に`private.rb`とします。
+$ ruby private.rb --dump
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <item>
+    <name>root_item</name>
+    <identifier>private.root_item</identifier>
+    <autogen>__KeyToKey__ KeyCode::SPACE, KeyCode::TAB</autogen>
+    <autogen>__KeyToKey__ KeyCode::TAB, KeyCode::SPACE</autogen>
+    <autogen>__KeyToKey__ KeyCode::COMMAND_R, KeyCode::ESCAPE</autogen>
+  </item>
+</root>
 
-    require 'keyremac'
-    :SPACE .to :TAB
+$ ruby private.rb --reload
+```
 
-SymbolはKeyRemap4MacBookの`KeyCode`になります。
-調べるにはKeyRemap4MacBookの`Launch EventViewer`を使います。
+## Examples
 
-`.to`は`KeyToKey`を生成するためのmethodです。
-`KeyToKey`は指定したキーを別のキーに変換します。
-上記の例では、`SPACE`を押すと`TAB`を押したことになる設定を記述しています。
+### simple KeyToKey
 
-### 設定の反映
+```rb
+:SPACE .to :TAB
+```
 
-`--reload`をつけて実行すると、private.xmlの生成・配置とreloadが行われます。
-**すでにprivate.xmlが存在していても予告なしに上書くので、あらかじめbackupをお願いします。**
-変換後、正しい設定ならなにも出力しません。
-もしKeyRemap4MacBookが受け付けない設定が含まれているときはdialogが表示されます。
+### mods (cmd, ctrl, opt, shift, none)
 
-    ruby private.rb --reload
+```rb
+:m.cmd .to :VK_NONE
+:j.ctrl .to :JIS_KANA
+```
 
-### private.xmlの確認
+### key to keys
 
-どのようなprivate.xmlが出力されるか確認したいときは`--dump`を使用します。
+```rb
+:n.ctrl.cmd .to :JIS_EISUU, '['.cmd.shift
+:p.ctrl.cmd .to :JIS_EISUU, ']'.cmd.shift
+```
 
-    ruby private.rb --dump
+### app_only
 
-上記の設定を出力すると、以下のようなxmlが生成されます。
+```rb
+app "CHROME" do
+  :m.cmd.none .to :VK_NONE
+end
 
-    <?xml version="1.0" encoding="UTF-8"?>
-    <root>
-      <item>
-        <name>root_item</name>
-        <identifier>private.root_item</identifier>
-        <autogen>__KeyToKey__ KeyCode::SPACE, KeyCode::TAB</autogen>
-        <autogen>__KeyToKey__ KeyCode::TAB, KeyCode::SPACE</autogen>
-        <autogen>__KeyToKey__ KeyCode::COMMAND_R, KeyCode::ESCAPE</autogen>
-      </item>
-    </root>
+# or
 
-## documents
+item app: "CHORME" do
+  ...
+end
+```
 
-TODO: rdoc整備したらリンク載せる
+### inputsource_only
 
-## Contributing
+```
+item inputsource: "JAPANESE" do
+  :l .to :JIS_EISUU
+end
+```
 
-1. Fork it
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
+### raw
+
+```
+item_ do
+  name_ 'jis_to_us'
+  identifier_ 'private.jis_to_us'
+  autogen_ "__SetKeyboardType__ KeyboardType::MACBOOK"
+  :JIS_YEN .to :BACKQUOTE
+  :JIS_UNDERSCORE .to :BACKQUOTE
+end
+```
+
+more examples: https://github.com/keqh/keyremac/tree/master/samples
+and specs: https://github.com/keqh/keyremac/tree/master/spec
+
