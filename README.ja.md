@@ -6,9 +6,9 @@ KeyRemap4MacBookの設定を行うDSLを提供します。
 
 ## dependency
 
-KeyRemap4MacBook v7.0.0+
-    https://pqrs.org/macosx/keyremap4macbook/
-ruby v2.0.0+
+- KeyRemap4MacBook v7.0.0+
+    - https://pqrs.org/macosx/keyremap4macbook/
+- ruby v2.0.0+
 
 ## Installation
 
@@ -92,6 +92,6 @@ item_ do
 end
 ```
 
-more examples: https://github.com/keqh/keyremac/tree/master/samples
-and specs: https://github.com/keqh/keyremac/tree/master/spec
+- more examples: https://github.com/keqh/keyremac/tree/master/samples
+- and specs: https://github.com/keqh/keyremac/tree/master/spec
 
