@@ -1,7 +1,10 @@
 # Keyremac
 
+[![Build Status](https://travis-ci.org/keqh/keyremac.png?branch=master)](https://travis-ci.org/keqh/keyremac)
+
 *Keyremac*はRubyでKeyRemap4MacBookの設定を行うgemです。
-大量のcheckboxを扱うのが苦手な方や、XMLを手で編集するのが好きではない方向けに、
+- 大量のcheckboxを扱うのが苦手な方や
+- XMLを手で編集するのが好きではない方向けに
 KeyRemap4MacBookの設定を行うDSLを提供します。
 
 ## dependency
