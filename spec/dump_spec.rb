@@ -1,6 +1,5 @@
 
 require 'minitest/autorun'
-require 'keyremac/base'
 require 'keyremac/dump'
 
 module MiniTest::Assertions
@@ -9,17 +8,42 @@ module MiniTest::Assertions
     actual = rule.dump(xml)
     assert actual == expected, message { diff expected, actual }
   end
-end
-Object.infect_an_assertion :assert_xml, :must_be_xml
 
-describe 'dump' do
-  before do
-    @root = Keyremac::Root.new
-    @xml = Builder::XmlMarkup.new(indent: 2)
-    Keyremac::Item.reset_identifier
+  def assert_item(expected, rule)
+    expected = <<-EOI
+<item>
+  <name>a</name>
+  <identifier>private.a</identifier>
+  #{expected}
+</item>
+    EOI
+    xml = Builder::XmlMarkup.new(indent: 2)
+    actual = rule.dump(xml)
+    assert actual == expected, message { diff expected, actual }
   end
 
-  it 'rootが出力される' do
+  def assert_autogen(expected, rule)
+    xml = Builder::XmlMarkup.new(indent: 2)
+    actual = rule.dump(xml)
+    assert_match("autogen", actual)
+    assert_match(expected, actual)
+  end
+
+  def assert_tag(expected, rule)
+    xml = Builder::XmlMarkup.new(indent: 2)
+    actual = rule.dump(xml)
+    assert_match(expected, actual)
+  end
+end
+Object.infect_an_assertion :assert_xml, :must_be_xml
+Object.infect_an_assertion :assert_item, :must_be_item
+Object.infect_an_assertion :assert_autogen, :must_be_autogen
+Object.infect_an_assertion :assert_tag, :must_contain_tag
+
+describe 'root' do
+  let(:root) { Keyremac::Root.new }
+
+  it 'generates root tag' do
     expected = <<-EOR
 <?xml version="1.0" encoding="UTF-8"?>
 <root>
@@ -29,68 +53,30 @@ describe 'dump' do
   </item>
 </root>
     EOR
-    @root.must_be_xml expected
+    root.must_be_xml expected
   end
+end
 
-  it '任意のtagを書くことができる' do
-    expected = "<hoge>\n</hoge>\n"
-    @root.hoge_ {}.must_be_xml expected
+describe 'raw' do
+  let(:root) { Keyremac::Root.new }
+
+  it 'can write any tags' do
+    root.hoge_ {}.must_contain_tag "hoge"
+    root.fuga_("").must_contain_tag "fuga"
   end
+end
 
-  describe 'item' do
-    ITEM = <<-EOI
-<item>
-  <name>a</name>
-  <identifier>private.a</identifier>
-  %s
-</item>
-    EOI
-
-    it 'blank' do
-      expected = <<-EOI
-<item>
-  <name>a</name>
-  <identifier>private.a</identifier>
-</item>
-      EOI
-      @root.item {}.must_be_xml expected
-    end
-
-    it 'raw' do
-      expected = ITEM % "<autogen>__KeyToKey__ KeyCode::J, KeyCode::K</autogen>"
-      @root.item {
-        autogen_ '__KeyToKey__ KeyCode::J, KeyCode::K'
-      }.must_be_xml expected
-    end
-
-    it 'app' do
-      expected = ITEM % "<only>TERMINAL</only>"
-      @root.item(app: 'TERMINAL') {}.must_be_xml expected
-    end
-
-    it 'inputsource' do
-      expected = ITEM % "<inputsource_only>JAPANESE</inputsource_only>"
-      @root.item(inputsource: 'JAPANESE') {}.must_be_xml expected
-    end
+describe Keyremac::Key do
+  describe '#to' do
+    it { (:j .to :k).must_be_autogen "KeyToKey" }
+    it { (:j .to :k, :l).must_be_autogen "KeyToKey" }
+    it { (:F7.to:MUSIC_PREV).must_be_autogen "KeyToConsumer" }
   end
+end
 
-  describe 'app' do
-    it 'raw' do
-      expected = ITEM % "<only>TERMINAL</only>"
-      @root.app('TERMINAL') {}.must_be_xml expected
-    end
-  end
-
-  describe 'to' do
-    it 'basic' do
-      expected = "<autogen>__KeyToKey__ KeyCode::J, KeyCode::K</autogen>\n"
-      (:j .to :k).must_be_xml expected
-    end
-
-    it '複数' do
-      expected = "<autogen>__KeyToKey__ KeyCode::J, KeyCode::K, KeyCode::L</autogen>\n"
-      (:j .to :k, :l).must_be_xml expected
-    end
+describe 'root' do
+  before do
+    @root = Keyremac::Root.new
   end
 
   ROOT2 = <<-EOR
@@ -104,57 +90,68 @@ describe 'dump' do
 </root>
   EOR
 
-  describe 'root直下' do
-    it 'root直下にautogenを書くとroot_itemに追加される' do
-      :j .to :k
-      expected = ROOT2 % "<autogen>__KeyToKey__ KeyCode::J, KeyCode::K</autogen>"
-      @root.dump.must_equal expected
+  it 'can write toplevel key definition' do
+    :j .to :k
+    expected = ROOT2 % "<autogen>__KeyToKey__ KeyCode::J, KeyCode::K</autogen>"
+    @root.must_be_xml expected
+  end
+end
+
+describe 'dump' do
+  before do
+    @root = Keyremac::Root.new
+    Keyremac::Item.reset_identifier
+  end
+
+  describe 'item' do
+    it 'generates item tag' do
+      contents = '__KeyToKey__ KeyCode::J, KeyCode::K'
+      @root.item { autogen_ contents }.must_be_item "<autogen>#{contents}</autogen>"
+    end
+
+    it 'generates item tag with only tag' do
+      @root.item(app: 'TERMINAL') {}.must_be_item "<only>TERMINAL</only>"
+    end
+
+    it 'generates item tag with inputsource_only tag' do
+      @root.item(inputsource: 'JAPANESE') {}.must_be_item "<inputsource_only>JAPANESE</inputsource_only>"
+    end
+
+    it 'generates item tag with only tag' do
+      @root.app('TERMINAL') {}.must_be_item "<only>TERMINAL</only>"
     end
   end
 
   describe 'mods' do
-    it 'ctrl' do
-      expected = "KeyCode::J, VK_CONTROL"
-      :j.ctrl.must_be_xml expected
+    it 'trails mod key' do
+      :j.ctrl.must_be_xml "KeyCode::J, VK_CONTROL"
     end
 
-    it 'none' do
-      expected = "KeyCode::J, ModifierFlag::NONE"
-      :j.none.must_be_xml expected
+    it 'trails none flag' do
+      :j.none.must_be_xml "KeyCode::J, ModifierFlag::NONE"
     end
 
-    it '複数' do
-      expected = "KeyCode::J, VK_CONTROL | VK_COMMAND"
-      :j.ctrl.cmd.must_be_xml expected
-    end
-  end
-
-  describe 'consumer' do
-    it 'consumer_key' do
-      expected = "ConsumerKeyCode::MUSIC_PREV"
-      :MUSIC_PREV.to_key.must_be_xml expected
-    end
-    it 'key_to_consumer' do
-      expected = "<autogen>__KeyToConsumer__ KeyCode::F7, ConsumerKeyCode::MUSIC_PREV</autogen>\n"
-      (:F7.to:MUSIC_PREV).must_be_xml expected
+    it 'trails mod keys' do
+      :j.ctrl.cmd.must_be_xml "KeyCode::J, VK_CONTROL | VK_COMMAND"
     end
   end
 
   describe 'key_overlaid_modifier' do
-    it 'basic' do
-      expected = "<autogen>__KeyOverlaidModifier__ KeyCode::JIS_EISUU, KeyCode::COMMAND_L, KeyCode::JIS_EISUU</autogen>\n"
-      (:JIS_EISUU.overlaid:COMMAND_L).must_be_xml expected
-    end
-    it 'keys' do
-      expected = "<autogen>__KeyOverlaidModifier__ KeyCode::CONTROL_L, KeyCode::CONTROL_L, KeyCode::JIS_EISUU, KeyCode::ESCAPE</autogen>\n"
-      autogen = :CONTROL_L .overlaid :CONTROL_L, keys: [:JIS_EISUU, :ESCAPE]
-      autogen.must_be_xml expected
+    it 'generates KeyOverlaidModifier' do
+      expected = "__KeyOverlaidModifier__ KeyCode::JIS_EISUU, KeyCode::COMMAND_L, KeyCode::JIS_EISUU"
+      (:JIS_EISUU.overlaid:COMMAND_L).must_be_autogen expected
     end
 
-    it 'repeat' do
-      expected = "<autogen>__KeyOverlaidModifierWithRepeat__ KeyCode::SPACE, KeyCode::SHIFT_L, KeyCode::SPACE</autogen>\n"
+    it 'generates KeyOverlaidModifier with keys' do
+      expected = "__KeyOverlaidModifier__ KeyCode::CONTROL_L, KeyCode::CONTROL_L, KeyCode::JIS_EISUU, KeyCode::ESCAPE"
+      autogen = :CONTROL_L .overlaid :CONTROL_L, keys: [:JIS_EISUU, :ESCAPE]
+      autogen.must_be_autogen expected
+    end
+
+    it 'generates KeyOverlaidModifierWithRepeat' do
+      expected = "__KeyOverlaidModifierWithRepeat__ KeyCode::SPACE, KeyCode::SHIFT_L, KeyCode::SPACE"
       autogen = :SPACE .overlaid :SHIFT_L, repeat: true
-      autogen.must_be_xml expected
+      autogen.must_be_autogen expected
     end
   end
 end
