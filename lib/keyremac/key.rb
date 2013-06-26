@@ -1,6 +1,5 @@
 
 require 'keyremac/base'
-require 'keyremac/autogen'
 require 'keyremac/constants'
 
 require 'set'
