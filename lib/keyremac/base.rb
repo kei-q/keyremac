@@ -4,44 +4,43 @@ require 'builder'
 require 'keyremac/key'
 
 module Keyremac
-  # focus
-  # ====================================
+  module Focus
+    @@focus = []
 
-  @@focus = []
-
-  def self.focus
-    @@focus
-  end
-
-  def self.get_focus
-    @@focus.last
-  end
-  def self.set_focus(container, &block)
-    @@focus.push container
-    yield
-    @@focus.pop
-  end
-
-  # autogen
-  # ====================================
-
-  class KeyToKey < Struct.new(:from, :to); end
-  class KeyToConsumer < Struct.new(:from, :to); end
-  class KeyOverlaidModifier # < Struct.new(:key, :mod, :keys)
-    attr_reader :key, :mod, :keys, :repeat
-    def initialize(key, mod, keys: [], repeat: false)
-      @key = key
-      @mod = mod
-      @keys = keys == [] ? [key] : keys
-      @repeat = repeat
+    def self.add(rule)
+      @@focus.last.add rule
     end
 
-    def repeat?
-      @repeat
+    def self.focus
+      @@focus
+    end
+
+    def self.set_focus(container, &block)
+      @@focus.push container
+      yield
+      @@focus.pop
     end
   end
 
-  # container
+  module Autogen
+    class KeyToKey < Struct.new(:from, :to); end
+    class KeyToConsumer < Struct.new(:from, :to); end
+    class KeyOverlaidModifier
+      attr_reader :key, :mod, :keys, :repeat
+      def initialize(key, mod, keys: [], repeat: false)
+        @key = key
+        @mod = mod
+        @keys = keys == [] ? [key] : keys
+        @repeat = repeat
+      end
+
+      def repeat?
+        @repeat
+      end
+    end
+  end
+
+  # @group container
   # ====================================
 
   module Container
@@ -56,7 +55,7 @@ module Keyremac
       if method_name[-1] == '_'
         raw = Raw.new method_name.chomp('_')
         if block
-          Keyremac.set_focus raw do
+          Keyremac::Focus.set_focus raw do
             raw.instance_eval(&block)
           end
         else
@@ -103,22 +102,29 @@ module Keyremac
 
     def initialize
       @root_item = Item.new 'root_item'
-      Keyremac.focus.clear
-      Keyremac.focus << @root_item
+      Keyremac::Focus.focus.clear
+      Keyremac::Focus.focus << @root_item
       @children = []
     end
 
+    # @param [String] app only tag
+    # @param [String] inputsource inputsource_only tag
+    # yield [] children
+    # @return [Item]
     def item(app: nil, inputsource: nil, &block)
       Item.new.tap { |item|
         item.only_ app if app
         item.inputsource_only_ inputsource if inputsource
         @children << item
-        Keyremac.set_focus item do
+        Keyremac::Focus.set_focus item do
           item.instance_eval(&block)
         end
       }
     end
 
+    # @param [String] only
+    # @option options same as item method
+    # @return [Item]
     def app(only, **options, &block)
       options[:app] = only
       item(**options, &block)
@@ -135,8 +141,8 @@ module Keyremac
       @@root
     end
 
-    def method_missing(method_name, *args, &block)
-      @@root.send(method_name, *args, &block)
+    def method_missing(*args, &block)
+      @@root.send(*args, &block)
     end
   end
 end

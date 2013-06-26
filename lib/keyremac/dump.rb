@@ -1,5 +1,7 @@
-module Keyremac
 
+require 'keyremac/base'
+
+module Keyremac
   # key
   # ===========================
 
@@ -32,24 +34,26 @@ module Keyremac
   # autogen
   # ===========================
 
-  class KeyToKey
-    def dump(xml)
-      seqs = [from, *to].map{ |k| k.dump(xml) }.join(', ')
-      xml.autogen "__KeyToKey__ #{seqs}"
+  module Autogen
+    class KeyToKey
+      def dump(xml)
+        seqs = [from, *to].map{ |k| k.dump(xml) }.join(', ')
+        xml.autogen "__KeyToKey__ #{seqs}"
+      end
     end
-  end
 
-  class KeyToConsumer
-    def dump(xml)
-      xml.autogen "__KeyToConsumer__ #{from.dump(xml)}, #{to.dump(xml)}"
+    class KeyToConsumer
+      def dump(xml)
+        xml.autogen "__KeyToConsumer__ #{from.dump(xml)}, #{to.dump(xml)}"
+      end
     end
-  end
 
-  class KeyOverlaidModifier
-    def dump(xml)
-      seqs = [key, mod, *keys].map { |k| k.dump(xml) }.join(', ')
-      autogen = repeat ? '__KeyOverlaidModifierWithRepeat__' : '__KeyOverlaidModifier__'
-      xml.autogen "#{autogen} #{seqs}"
+    class KeyOverlaidModifier
+      def dump(xml)
+        seqs = [key, mod, *keys].map { |k| k.dump(xml) }.join(', ')
+        autogen = repeat ? '__KeyOverlaidModifierWithRepeat__' : '__KeyOverlaidModifier__'
+        xml.autogen "#{autogen} #{seqs}"
+      end
     end
   end
 

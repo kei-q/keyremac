@@ -1,5 +1,6 @@
 
 require 'keyremac/base'
+require 'keyremac/autogen'
 require 'keyremac/constants'
 
 require 'set'
@@ -18,27 +19,28 @@ module Keyremac
       define_method("#{k}?", -> { self.to_key.mods.include? v })
     }
 
+    def add_rule(autogen)
+      Keyremac::Focus.add autogen
+      autogen
+    end
+
     # @param [Array<Keyable>] keys
     # @return [KeyToKey]
     # @return [KeyToConsumer]
     def to(*keys)
       key = keys.first.to_key
-      autogen = if key.consumer_key?
-        Keyremac::KeyToConsumer.new self.to_key, key
+      if key.consumer_key?
+        add_rule Autogen::KeyToConsumer.new(self.to_key, key)
       else
-        Keyremac::KeyToKey.new self.to_key, keys.map(&:to_key)
+        add_rule Autogen::KeyToKey.new(self.to_key, keys.map(&:to_key))
       end
-      Keyremac.get_focus.add autogen
-      autogen
     end
 
     # @param [Keyable] mod
     # @options [Keyable] mod
     # @return [KeyToOverlaidModifier]
     def overlaid(mod, keys: [], repeat: false)
-      autogen = Keyremac::KeyOverlaidModifier.new self.to_key, mod.to_key, keys: keys.map(&:to_key), repeat: repeat
-      Keyremac.get_focus.add autogen
-      autogen
+      add_rule Autogen::KeyOverlaidModifier.new(self.to_key, mod.to_key, keys: keys.map(&:to_key), repeat: repeat)
     end
 
     def consumer_key?
