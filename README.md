@@ -1,6 +1,7 @@
 # Keyremac
 
 [![Build Status](https://travis-ci.org/keqh/keyremac.png?branch=master)](https://travis-ci.org/keqh/keyremac)
+[![Code Climate](https://codeclimate.com/github/keqh/keyremac.png)](https://codeclimate.com/github/keqh/keyremac)
 
 Keyremac is KeyRemap4MacBook settings generator.
 
