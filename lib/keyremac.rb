@@ -20,8 +20,8 @@ module Keyremac
     result
   end
 
-  CLI_PATH = '/Applications/KeyRemap4MacBook.app/Contents/Applications/KeyRemap4MacBook_cli.app/Contents/MacOS/KeyRemap4MacBook_cli'
-  DEFAULT_SETTINGS_PATH = '~/Library/Application Support/KeyRemap4MacBook/private.xml'
+  CLI_PATH = '/Applications/Karabiner.app/Contents/Library/bin/karabiner'
+  DEFAULT_SETTINGS_PATH = '~/Library/Application Support/Karabiner/private.xml'
 
   def self.reload
     File.write File.expand_path(DEFAULT_SETTINGS_PATH), get_root.dump
