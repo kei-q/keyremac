@@ -1,3 +1,5 @@
+lib = File.expand_path('../../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 require 'keyremac'
 
@@ -14,6 +16,7 @@ end
 ';' .to '_'
 '_' .to ';'
 
+# 外部キーボード用
 :F7  .to :MUSIC_PREV
 :F8  .to :MUSIC_PLAY
 :F9  .to :MUSIC_NEXT
@@ -23,12 +26,18 @@ end
 
 :JIS_EISUU .overlaid :COMMAND_L
 :CONTROL_L .overlaid :CONTROL_L, keys: [:JIS_EISUU, :ESCAPE]
+:CONTROL_R .overlaid :CONTROL_L, keys: [:JIS_EISUU, :ESCAPE]
 :SPACE     .overlaid :SHIFT_L, repeat: true
 
 :m.cmd     .to :VK_NONE   # disable_minimize
-:j.ctrl    .to :JIS_KANA # "Google IME"
+:j.ctrl.none .to :JIS_KANA # "Google IME"
 :JIS_KANA  .to :RETURN
 :COMMAND_L .to :OPTION_L
+# :COMMAND_L .overlaid :OPTION_L, keys: [:JIS_KANA]
+:TAB.opt .to :TAB.cmd
+
+# GTDtool用
+:COMMAND_R .to :COMMAND_R.ctrl.shift
 
 # extra1
 :SHIFT_L.cmd      .to :SHIFT_L.cmd
@@ -43,25 +52,36 @@ end
 :b.ctrl.none .to :CURSOR_LEFT
 :f.ctrl.none .to :CURSOR_RIGHT
 
+# ctrl-hはいつどんなときでもbackspace
+:h.ctrl.none .to :DELETE
+
+
 app 'TERMINAL' do
-  "pnco".chars { |c| c.extra1 .to :JIS_EISUU, :t.ctrl, c }
+  "pn".chars { |c| c.extra1 .to :JIS_EISUU, :t.ctrl, c }
+  "co".chars { |c| c.extra1 .to :JIS_EISUU, :t.ctrl, c }
   "jkl" .chars { |c| c.extra1 .to :JIS_EISUU, :t.ctrl, c }
   "du"  .chars { |c| c.extra1 .to :t.ctrl, '['.ctrl, c.ctrl }
 end
 
-appdef_ do
-  appname_ "SUBLIME"
-  equal_ "com.sublimetext.3"
-  equal_ "com.sublimetext.2"
+app "SUBLIMETEXT" do
+  ".".extra1 .to *("->".chars)
+  ",".extra1 .to *("<-".chars)
+  "_".extra1 .to *("::".chars)
 end
 
-['SUBLIME', 'GOOGLE_CHROME'].each { |app_name|
-  app app_name do
-    :p.extra1 .to :JIS_EISUU, '['.cmd.shift
-    :n.extra1 .to :JIS_EISUU, ']'.cmd.shift
-  end
-}
-
-app 'SUBLIME', inputsource: 'JAPANESE' do
+app 'SUBLIMETEXT', inputsource: 'JAPANESE' do
   :TAB .to :i.ctrl
+end
+
+item_ do
+  name_ 'focus_tab'
+  identifier_ 'private.focus_tab'
+  not_ 'TERMINAL'
+  # タブの移動
+  :p.extra1 .to :JIS_EISUU, '['.cmd.shift
+  :n.extra1 .to :JIS_EISUU, ']'.cmd.shift
+end
+
+app 'XCODE' do
+  :s.opt .to :JIS_EISUU, :o.cmd.shift, '.', 's', 't', 'o', 'r', 'y', :RETURN
 end
